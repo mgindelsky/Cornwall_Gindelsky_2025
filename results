@@ -14,7 +14,7 @@
     lambda <- seq(.005, 0.50, .005) 
   # A vector of features that will not be penalized
     no_penalty_gini <- c('taxcred', 'wages', 'prop', 'assets')
-    no_penalty_q <- c('wages', 'prop', 'assets', 'taxcred')
+    no_penalty_q <- c('taxcred', 'wages', 'prop', 'assets')
   # The targeted variance explained (deviance ratio) for the model, will use the value closest to this
     var_val <- .95
     
@@ -30,11 +30,11 @@ gsub(pattern = 'results.R', replacement = '')
   source(paste0(root, 'plot_results_function.R')
          
 # Load Data ####
-  data <- read_excel('replication.xlsx')
+  data <- read_excel('replication_data.xlsx')
   gini_x <- data %>%
-         select(YEAR VARNAMES FEATURES)
+         select(year, assets, medicaid, medicare, prop, rent, taxcred, transfers,	unemployment,	wages)
   targets <- data %>%
-         select(YEAR ALL DEP VARS)
+         select(year, gini,	is_q1,	is_q2,	is_q3,	is_q4,	is_q5)
          
 # Gini ####
   # Parameters ####
@@ -89,7 +89,8 @@ gsub(pattern = 'results.R', replacement = '')
                          coefficients = coefs,
                          predictions = predictions)
   }
-  
+#Now use the predicted Gini to help nowcast the quintiles
+
   
 # Quintiles ####
   # Storage ####
@@ -181,7 +182,7 @@ gsub(pattern = 'results.R', replacement = '')
       predictions = predictions2)
   }
   
-  # Plotting Quintile Frames ####
+  # Preparing for Plotting ####
   q1_results <- lapply(resultsq, function(x) {
     data.frame(predictions = x$predictions[,1])})
   
@@ -199,18 +200,5 @@ gsub(pattern = 'results.R', replacement = '')
   
   
   
-# Plot Results Example ####
-  plot_results(target_value = targets$gini, 
-               results_list = results,
-               ylab = 'Gini Coefficient',
-               title = 'Nowcast of Gini Coefficient',
-               dir = NULL,
-               sv_name = NULL)
-  
-  plot_results(target_value = targets$q1,
-               results_list = q1_results,
-               ylab = 'Share of PI',
-               title = 'Nowcast of Income Share: Q1',
-               dir = NULL,
-               sv_name = NULL)
+
   
