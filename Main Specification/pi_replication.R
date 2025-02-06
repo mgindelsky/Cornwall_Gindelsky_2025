@@ -12,8 +12,8 @@
   # Sequence of lambda values to check
     lambda <- seq(.005, 0.50, .005) 
   # A vector of features that will not be penalized
-    no_penalty_gini <- c('share_tax_credits', 'share_wages', 'share_prop', 'share_assets')
-    no_penalty_q <- c('share_wages', 'share_prop', 'share_assets', 'share_tax_credits')
+    no_penalty_gini <- c('taxcred', 'wages', 'prop', 'assets')
+    no_penalty_q <- c('wages', 'prop', 'assets', 'taxcred')
   # The targeted variance explained (deviance ratio) for the model, will use the value closest to this
     var_val <- .95
     
@@ -23,17 +23,23 @@
 
 # Directories ####
   root <- getSourceEditorContext()$path %>%
+
+*********MARINA: THIS PART NEEDS TO BE MODIFIED****************
+
     gsub(pattern = 'pi_replication.R', replacement = '')
   root <- gsub(pattern = 'Results Scripts/', replacement = '', x = root)
   data_dir <- paste0(root, 'Base Data/main_analysis_pi')
 
 # Source Helper Function(s) ####
-  source(paste0(root, '/Helper Functions/plot_results_function.R'))
+  source(paste0(root, '/Helper Functions/plot_results_function.R')
+
 # Load Data ####
   load(paste0(data_dir, '/gini_features.Rda')) 
   load(paste0(data_dir, '/targets.Rda'))
   load(paste0(data_dir, '/quintile_features.Rda'))
-  
+
+         *************************************
+         
 # Gini ####
   # Parameters ####
   penalty <- abs((colnames(gini_x) %in% no_penalty_gini - 1))
@@ -41,6 +47,7 @@
   results <- list()
   RMSE <- numeric()
   # Processing ####
+  # Iteratively do one-step ahead nowcasts for 2020, 2021, 2022, and 2023 ###
   for (i in 1:4) {  
     temp <- gini_x %>%
       makeX(., na.impute = T) #This will impute earlier values if they are NA due to differencing.
