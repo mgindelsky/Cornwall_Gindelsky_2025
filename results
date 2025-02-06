@@ -1,4 +1,5 @@
-# Replication Script for Personal Income Nowcasting
+# Replication Script for Personal Income Nowcasting - This script creates the dataframes from which the tables and figures can be created
+
   # Inputs - None, the script is self contained based on replication file
   # Outputs - 
       # results - A list of outputs for the nowcasting of the Gini Coefficient
