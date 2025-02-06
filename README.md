@@ -11,12 +11,4 @@ Replication code for "Nowcasting Distributional National Accounts for the United
 
 Replication package consists of several folders:
 1. Base Data
-   - main_analysis_dpi.Rda: targets and features for nowcasting disposable personal income (2020-2023)
-   - main_analysis_pi.Rda: targets and features for nowcasting personal income (2020-2023)
-   - main_analysis_w_macro_pi.Rda: targets and features (including additional macro economic indicators) for nowcasting personal income (2020-2023)
-2. Helper Functions
-   - plot_results_function: an R function that utilizes ggplot to create graphics similar to those found throughout the paper and online appendix.
-3. Results Scripts
-   - dpi_replication: a script that loads main_analysis_dpi.Rda and replicates the analysis found in the online appendix
-   - pi_replication: a script that loads main_analysis_pi.Rda and replicates the analysis found in the paper
-   - pi_replication_w_macros: a script that loads main_analysis_w_macro_pi.Rda and replicates the analysis found in the online appendix
+
