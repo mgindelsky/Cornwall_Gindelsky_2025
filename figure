@@ -1,0 +1,16 @@
+  
+# Plot Results Example ####
+  plot_results(target_value = targets$gini, 
+               results_list = results,
+               ylab = 'Gini Coefficient',
+               title = 'Nowcast of Gini Coefficient',
+               dir = NULL,
+               sv_name = NULL)
+  
+  plot_results(target_value = targets$q1,
+               results_list = q1_results,
+               ylab = 'Share of PI',
+               title = 'Nowcast of Income Share: Q1',
+               dir = NULL,
+               sv_name = NULL)
+  
