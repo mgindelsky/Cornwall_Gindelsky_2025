@@ -22,23 +22,18 @@
   pacman::p_load(readxl, tidyverse, ggplot2, glmnet, rstudioapi, pracma)
 
 # Directories ####
-  root <- getSourceEditorContext()$path %>%
-
-*********MARINA: THIS PART NEEDS TO BE MODIFIED****************
-
-    gsub(pattern = 'pi_replication.R', replacement = '')
-  root <- gsub(pattern = 'Results Scripts/', replacement = '', x = root)
-  data_dir <- paste0(root, 'Base Data/main_analysis_pi')
+  root <- getSourceEditorContext()$path %>%    
+gsub(pattern = 'pi_replication.R', replacement = '')
 
 # Source Helper Function(s) ####
   source(paste0(root, '/Helper Functions/plot_results_function.R')
-
+         
 # Load Data ####
-  load(paste0(data_dir, '/gini_features.Rda')) 
-  load(paste0(data_dir, '/targets.Rda'))
-  load(paste0(data_dir, '/quintile_features.Rda'))
-
-         *************************************
+  data <- read_excel('replication.xlsx')
+  gini_x <- data %>%
+         select(YEAR VARNAMES FEATURES)
+  targets <- data %>%
+         select(YEAR ALL DEP VARS)
          
 # Gini ####
   # Parameters ####
