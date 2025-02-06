@@ -9,6 +9,5 @@ Replication code for "Nowcasting Distributional National Accounts for the United
 - All analysis completed using NIPA Vintage October 2024
 - All analysis completed using distributional accounts vintage December 2024
 
-Replication package consists of several folders:
-1. Base Data
+Replication package consists of several files
 
