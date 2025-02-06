@@ -1,6 +1,6 @@
 # Replication Script for Personal Income Nowcasting - This script creates the dataframes from which the tables and figures can be created
 
-  # Inputs - None, the script is self contained based on replication file
+  # Inputs - Excel file in the directory "replication"
   # Outputs - 
       # results - A list of outputs for the nowcasting of the Gini Coefficient
         # Includes features, coefficients, and predictions (one-step-ahead)
@@ -24,10 +24,10 @@
 
 # Directories ####
   root <- getSourceEditorContext()$path %>%    
-gsub(pattern = 'pi_replication.R', replacement = '')
+gsub(pattern = 'results.R', replacement = '')
 
 # Source Helper Function(s) ####
-  source(paste0(root, '/Helper Functions/plot_results_function.R')
+  source(paste0(root, 'plot_results_function.R')
          
 # Load Data ####
   data <- read_excel('replication.xlsx')
