@@ -76,7 +76,7 @@ plot_results <- function(target_value,
                                   'Data Ending 2019' = 'purple',
                                   'Data Ending 2020' = 'red',
                                   'Data Ending 2021' = 'blue',
-                                  'Data Ending 2022' = 'orange')) +
+                                  'Data Ending 2022' = 'yellow')) +
     scale_linetype_manual(name = '',
                           values = c('Published Series'  = 'solid',
                                      'Data Ending 2019' = 'dashed',
@@ -87,7 +87,7 @@ plot_results <- function(target_value,
                        values = c('Published Series' = 15,
                                   'Data Ending 2019' = 16,
                                   'Data Ending 2020' = 17,
-                                  'Data Ending 2021' = 19,
+                                  'Data Ending 2021' = 16,
                                   'Data Ending 2022' = 18)) + 
     ylab(ylab) + xlab(xlab) + ggtitle(title)
   
