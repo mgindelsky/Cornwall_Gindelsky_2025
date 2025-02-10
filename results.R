@@ -27,7 +27,7 @@
 gsub(pattern = 'results.R', replacement = '')
 
 # Source Helper Function(s) ####
-  source(paste0(root, 'plot_results_function.R')
+  source(paste0(root, 'plot_results_function.R'))
          
 # Load Data ####
   data <- read_excel('replication_data.xlsx')
