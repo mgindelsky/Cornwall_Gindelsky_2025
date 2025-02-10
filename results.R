@@ -30,11 +30,25 @@ gsub(pattern = 'results.R', replacement = '')
   source(paste0(root, 'plot_results_function.R'))
          
 # Load Data ####
-  data <- read_excel('replication_data.xlsx')
+  data <- read_excel(paste0(root,'replication_data.xlsx'))
   gini_x <- data %>%
          select(year, assets, medicaid, medicare, prop, rent, taxcred, transfers,	unemployment,	wages)
   targets <- data %>%
          select(year, gini,	is_q1,	is_q2,	is_q3,	is_q4,	is_q5)
+  
+  q_x <- data %>%
+    mutate(l1_q1 = lag(is_q1, 1),
+           l1_q2 = lag(is_q2, 1),
+           l1_q3 = lag(is_q3, 1),
+           l1_q4 = lag(is_q4, 1),
+           l1_q5 = lag(is_q5, 1),
+           l2_q1 = lag(is_q1, 2),
+           l2_q2 = lag(is_q2, 2),
+           l2_q3 = lag(is_q3, 2),
+           l2_q4 = lag(is_q4, 2),
+           l2_q5 = lag(is_q5, 2)) %>%
+    select(-contains('is_q'))
+    
          
 # Gini ####
   # Parameters ####
