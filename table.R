@@ -106,7 +106,7 @@ covid_rmse <- c(
   rmse_imp(observed = data$is_q3[21:24], var = var_covid_q3, enet = enet_covid_q3),
   rmse_imp(observed = data$is_q4[21:24], var = var_covid_q4, enet = enet_covid_q4),
   rmse_imp(observed = data$is_q5[21:24], var = var_covid_q5, enet = enet_covid_q5),
-  rmse_imp(observed = data$gini[21:24], var = var_covid_gini , enet = enet_covid_gini)
+  rmse_imp(observed = data$gini[21:23], var = var_covid_gini[1:3] , enet = enet_covid_gini[1:3])
 )
 
 
@@ -118,6 +118,6 @@ rmse_table <- rbind(
 
 
 
-rownames(rmse_table) <- c(paste0('Data Ending ', 2019:2022), 'Covid (2020-2023)')
+rownames(rmse_table) <- c(paste0('Data Ending ', 2019:2022), 'Covid (2020-2022)')
 
 
