@@ -2,7 +2,7 @@ pacman::p_load(vars, tidyverse, readxl, rstudioapi, forecast)
 
 # Directories ####
 root <- getSourceEditorContext()$path %>%    
-  gsub(pattern = 'vars.R', replacement = '')
+  gsub(pattern = '/var_models.R', replacement = '')
 
 data <- read_excel(paste0(root,'/replication_data.xlsx'))
 
@@ -20,9 +20,9 @@ for (yr in 2019:2022) {
   #Quintiles VAR2
   is_q_mod <- vars::VAR(log(temp_data[,paste0('is_q',1:5)]), p = 2)
   gini_predict[[yr - 2018]] <- list(
-    model = paste0('Data Ending ', year),
-    fitted = gini_mod$fitted,
-    next_step = forecast(gini_mod, h = 1)$mean
+    model = paste0('Data Ending ', yr),
+    fitted = fitted.values(gini_mod),
+    next_step = predict(gini_mod, n.ahead = 1)$pred
   )
   q_predict <- predict(is_q_mod, n.ahead = 1)$fcst %>% 
     do.call(rbind,.) %>%
@@ -30,7 +30,7 @@ for (yr in 2019:2022) {
     select(fcst)
   
   is_q_predict[[yr - 2018]] <- list(
-    model = paste0('Data Ending ', year),
+    model = paste0('Data Ending ', yr),
     fitted = exp(fitted.values(is_q_mod))/rowSums(exp(fitted.values(is_q_mod)))*100,
     next_step = exp(q_predict)/sum(exp(q_predict))*100
   )
@@ -39,3 +39,4 @@ for (yr in 2019:2022) {
 save(gini_predict, 
      is_q_predict,
      file = paste0(root, '/var_results.Rda'))
+ 

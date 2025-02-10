@@ -32,7 +32,8 @@ gsub(pattern = 'results.R', replacement = '')
 # Load Data ####
   data <- read_excel(paste0(root,'replication_data.xlsx'))
   gini_x <- data %>%
-         select(year, assets, medicaid, medicare, prop, rent, taxcred, transfers,	unemployment,	wages)
+    select(year, assets, medicaid, medicare, prop, rent, taxcred, transfers,	unemployment,	wages) %>%
+    mutate(indicator_2019 = ifelse(year == 2019, 1, 0))
   targets <- data %>%
          select(year, gini,	is_q1,	is_q2,	is_q3,	is_q4,	is_q5)
   
@@ -47,7 +48,8 @@ gsub(pattern = 'results.R', replacement = '')
            l2_q3 = lag(is_q3, 2),
            l2_q4 = lag(is_q4, 2),
            l2_q5 = lag(is_q5, 2)) %>%
-    select(-contains('is_q'))
+    select(-contains('is_q')) %>%
+    mutate(indicator_2019 = ifelse(year == 2019, 1, 0))
     
          
 # Gini ####
@@ -211,7 +213,14 @@ gsub(pattern = 'results.R', replacement = '')
   
   q5_results <- lapply(resultsq, function(x) {
     data.frame(predictions = x$predictions[,5])})
-  
+
+save(results,
+     q1_results, 
+     q2_results, 
+     q3_results, 
+     q4_results, 
+     q5_results, 
+     file = paste0(root, 'main_results.Rda'))
   
   
 
