@@ -100,5 +100,5 @@ plot_results <- function(target_value,
            dpi = 'retina')
   }
   
-  return(plot)
+  return(suppressWarnings(print(plot)))
 }
