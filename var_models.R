@@ -7,14 +7,14 @@ root <- getSourceEditorContext()$path %>%
 data <- read_excel(paste0(root,'/replication_data.xlsx'))
 
 data <- data %>%
-  select(year, gini, contains('is_q')) 
+  dplyr::select(year, gini, contains('is_q')) 
 
 gini_predict <- list()
 is_q_predict <- list()
 for (yr in 2019:2022) {
   temp_data <- data %>%
     filter(year <= yr) %>%
-    select(-year)
+    dplyr::select(-year)
   #Gini AR2
   gini_mod <- forecast::Arima(temp_data$gini, order = c(2, 0, 0))
   #Quintiles VAR2
@@ -27,7 +27,7 @@ for (yr in 2019:2022) {
   q_predict <- predict(is_q_mod, n.ahead = 1)$fcst %>% 
     do.call(rbind,.) %>%
     as_tibble() %>% 
-    select(fcst)
+    dplyr::select(fcst)
   
   is_q_predict[[yr - 2018]] <- list(
     model = paste0('Data Ending ', yr),
