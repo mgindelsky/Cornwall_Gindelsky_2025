@@ -21,8 +21,8 @@ for (yr in 2019:2022) {
   is_q_mod <- vars::VAR(log(temp_data[,paste0('is_q',1:5)]), p = 2)
   gini_predict[[yr - 2018]] <- list(
     model = paste0('Data Ending ', yr),
-    fitted = fitted.values(gini_mod),
-    next_step = predict(gini_mod, n.ahead = 1)$pred
+    fitted = round(fitted.values(gini_mod),1),
+    next_step = round(predict(gini_mod, n.ahead = 1)$pred,1)
   )
   q_predict <- predict(is_q_mod, n.ahead = 1)$fcst %>% 
     do.call(rbind,.) %>%
@@ -31,8 +31,8 @@ for (yr in 2019:2022) {
   
   is_q_predict[[yr - 2018]] <- list(
     model = paste0('Data Ending ', yr),
-    fitted = exp(fitted.values(is_q_mod))/rowSums(exp(fitted.values(is_q_mod)))*100,
-    next_step = exp(q_predict)/sum(exp(q_predict))*100
+    fitted = round(exp(fitted.values(is_q_mod))/rowSums(exp(fitted.values(is_q_mod)))*100,1),
+    next_step = round(exp(q_predict)/sum(exp(q_predict))*100,1)
   )
 }
 # Save list objects with results 

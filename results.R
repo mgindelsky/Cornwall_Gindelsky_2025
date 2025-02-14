@@ -32,10 +32,10 @@ gsub(pattern = 'results.R', replacement = '')
 # Load Data ####
   data <- read_excel(paste0(root,'replication_data.xlsx'))
   gini_x <- data %>%
-    select(year, assets, medicaid, medicare, prop, rent, taxcred, transfers,	unemployment,	wages) %>%
+    dplyr::select(year, assets, medicaid, medicare, prop, rent, taxcred, transfers,	unemployment,	wages) %>%
     mutate(indicator_2019 = ifelse(year == 2019, 1, 0))
   targets <- data %>%
-         select(year, gini,	is_q1,	is_q2,	is_q3,	is_q4,	is_q5)
+         dplyr::select(year, gini,	is_q1,	is_q2,	is_q3,	is_q4,	is_q5)
   
   q_x <- data %>%
     mutate(l1_q1 = lag(is_q1, 1),
@@ -48,7 +48,7 @@ gsub(pattern = 'results.R', replacement = '')
            l2_q3 = lag(is_q3, 2),
            l2_q4 = lag(is_q4, 2),
            l2_q5 = lag(is_q5, 2)) %>%
-    select(-contains('is_q')) %>%
+    dplyr::select(-contains('is_q')) %>%
     mutate(indicator_2019 = ifelse(year == 2019, 1, 0))
     
          
@@ -74,13 +74,13 @@ gsub(pattern = 'results.R', replacement = '')
         x = temp[1:(19 + i),],
         y = targets %>%
           filter(year %in% 2000:(2018 + i)) %>%
-          select(gini) %>%
+          dplyr::select(gini) %>%
           makeX(., na.impute = F)
       )
       s_use <- check$lambda[which.min(abs(var_val-check$dev.ratio))]
       predictions <- predict(check, newx = temp, 
                              s = s_use)
-      RMSE[j] <- sum((predictions - targets %>% select(gini))^2)
+      RMSE[j] <- sum((predictions - targets %>% dplyr::select(gini))^2)
     }
     #Final Model based on RMSE minimizing Alpha
     check <- glmnet(
@@ -93,7 +93,7 @@ gsub(pattern = 'results.R', replacement = '')
       x = temp[1:(19 + i),],
       y = targets %>%
         filter(year %in% 2000:(2018 + i)) %>%
-        select(gini) %>%
+        dplyr::select(gini) %>%
         makeX(., na.impute = F)
     )
     s_use <- check$lambda[which.min(abs(var_val-check$dev.ratio))]
@@ -116,12 +116,12 @@ gsub(pattern = 'results.R', replacement = '')
   for (j in 1:4) {
     means <- targets %>%
       filter(year %in% 2000:(2018 + j)) %>%
-      select(-year, -gini) %>%
+      dplyr::select(-year, -gini) %>%
       summarize_all(mean)
     
     demeaned_targets <- targets %>%
       filter(year %in% 2000:(2018 + j)) %>%
-      select(-year, -gini) 
+      dplyr::select(-year, -gini) 
     
     for (q in 1:5) {
       demeaned_targets[,q] <- demeaned_targets[,q] - as.vector(means[1,q])
@@ -139,7 +139,7 @@ gsub(pattern = 'results.R', replacement = '')
     tempq <- q_x %>%
       bind_cols(.,gini_pred = c(targets$gini[1:(19+i)],
                                 results[[i]]$predictions[(20+i):24])) %>%
-      select(-contains('unemployment')) %>%
+      dplyr::select(-contains('unemployment')) %>%
       makeX(., na.impute = T)
     penalty <- abs((colnames(tempq) %in%  no_penalty_q - 1))
     RMSE <- numeric()
@@ -161,7 +161,7 @@ gsub(pattern = 'results.R', replacement = '')
       
       RMSE[j] <- sum((predictions2[1:(19+i)] - targets %>% 
                         filter(year %in% 2000:(2018 + i)) %>%
-                        select(-year, -gini))^2)
+                        dplyr::select(-year, -gini))^2)
       
     }
     
@@ -220,8 +220,133 @@ save(results,
      q3_results, 
      q4_results, 
      q5_results, 
-     file = paste0(root, 'main_results.Rda'))
+     file = paste0(root, 'plot_results.Rda'))
   
+
+
+gini_dat <- data.frame(year = data$year,
+                       true = data$gini,
+                       predictions_e19 = results[[1]]$predictions[,1],
+                       predictions_e20 = results[[2]]$predictions[,1],
+                       predictions_e21 = results[[3]]$predictions[,1],
+                       predictions_e22 = results[[4]]$predictions[,1]) %>%
+  mutate(across(-year, 
+                .fns = ~round(.x, 1))) %>%
+  mutate(predictions_e19 = case_when(
+    year %in% 2021:2023 ~ NA,
+    TRUE ~ predictions_e19
+    ),
+    predictions_e20 = case_when(
+      year %in% 2022:2023 ~ NA,
+      TRUE ~ predictions_e20
+    ),
+    predictions_e21 = case_when(
+      year %in% 2023 ~ NA,
+      TRUE ~ predictions_e21))
+
+q1_dat <- data.frame(year = data$year,
+                     true = data$is_q1,
+                     predictions_e19 = resultsq[[1]]$predictions[,1],
+                     predictions_e20 = resultsq[[2]]$predictions[,1],
+                     predictions_e21 = resultsq[[3]]$predictions[,1],
+                     predictions_e22 = resultsq[[4]]$predictions[,1]) %>%
+  mutate(across(-year, 
+                .fns = ~round(.x, 1))) %>%
+  mutate(predictions_e19 = case_when(
+    year %in% 2021:2023 ~ NA,
+    TRUE ~ predictions_e19
+  ),
+  predictions_e20 = case_when(
+    year %in% 2022:2023 ~ NA,
+    TRUE ~ predictions_e20
+  ),
+  predictions_e21 = case_when(
+    year %in% 2023 ~ NA,
+    TRUE ~ predictions_e21))
+
+
+q2_dat <- data.frame(year = data$year,
+                     true = data$is_q2,
+                     predictions_e19 = resultsq[[1]]$predictions[,2],
+                     predictions_e20 = resultsq[[2]]$predictions[,2],
+                     predictions_e21 = resultsq[[3]]$predictions[,2],
+                     predictions_e22 = resultsq[[4]]$predictions[,2]) %>%
+  mutate(across(-year, 
+                .fns = ~round(.x, 1))) %>%
+  mutate(predictions_e19 = case_when(
+    year %in% 2021:2023 ~ NA,
+    TRUE ~ predictions_e19
+  ),
+  predictions_e20 = case_when(
+    year %in% 2022:2023 ~ NA,
+    TRUE ~ predictions_e20
+  ),
+  predictions_e21 = case_when(
+    year %in% 2023 ~ NA,
+    TRUE ~ predictions_e21))
+
+q3_dat <- data.frame(year = data$year,
+                     true = data$is_q3,
+                     predictions_e19 = resultsq[[1]]$predictions[,3],
+                     predictions_e20 = resultsq[[2]]$predictions[,3],
+                     predictions_e21 = resultsq[[3]]$predictions[,3],
+                     predictions_e22 = resultsq[[4]]$predictions[,3]) %>%
+  mutate(across(-year, 
+                .fns = ~round(.x, 1))) %>%
+  mutate(predictions_e19 = case_when(
+    year %in% 2021:2023 ~ NA,
+    TRUE ~ predictions_e19
+  ),
+  predictions_e20 = case_when(
+    year %in% 2022:2023 ~ NA,
+    TRUE ~ predictions_e20
+  ),
+  predictions_e21 = case_when(
+    year %in% 2023 ~ NA,
+    TRUE ~ predictions_e21))
+
+q4_dat <- data.frame(year = data$year,
+                     true = data$is_q4,
+                     predictions_e19 = resultsq[[1]]$predictions[,4],
+                     predictions_e20 = resultsq[[2]]$predictions[,4],
+                     predictions_e21 = resultsq[[3]]$predictions[,4],
+                     predictions_e22 = resultsq[[4]]$predictions[,4]) %>%
+  mutate(across(-year, 
+                .fns = ~round(.x, 1))) %>%
+  mutate(predictions_e19 = case_when(
+    year %in% 2021:2023 ~ NA,
+    TRUE ~ predictions_e19
+  ),
+  predictions_e20 = case_when(
+    year %in% 2022:2023 ~ NA,
+    TRUE ~ predictions_e20
+  ),
+  predictions_e21 = case_when(
+    year %in% 2023 ~ NA,
+    TRUE ~ predictions_e21))
+
+q5_dat <- data.frame(year = data$year,
+                     true = data$is_q5,
+                     predictions_e19 = resultsq[[1]]$predictions[,5],
+                     predictions_e20 = resultsq[[2]]$predictions[,5],
+                     predictions_e21 = resultsq[[3]]$predictions[,5],
+                     predictions_e22 = resultsq[[4]]$predictions[,5]) %>%
+  mutate(across(-year, 
+                .fns = ~round(.x, 1))) %>%
+  mutate(predictions_e19 = case_when(
+    year %in% 2021:2023 ~ NA,
+    TRUE ~ predictions_e19
+  ),
+  predictions_e20 = case_when(
+    year %in% 2022:2023 ~ NA,
+    TRUE ~ predictions_e20
+  ),
+  predictions_e21 = case_when(
+    year %in% 2023 ~ NA,
+    TRUE ~ predictions_e21))
+
+save(gini_dat, q1_dat, q2_dat, q3_dat, q4_dat, q5_dat,
+     file = paste0(root, 'enet_predict_results.Rda'))
   
 
   
