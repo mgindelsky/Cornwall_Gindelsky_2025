@@ -6,7 +6,7 @@ pacman::p_load(vars, tidyverse, readxl, rstudioapi, forecast)
 root <- getSourceEditorContext()$path %>%    
   gsub(pattern = 'table.R', replacement = '')
 
-load(file = paste0(root, '/var_results.Rda'))
+load(file = paste0(root, '/var_predict_results.Rda'))
 load(file = paste0(root, '/enet_predict_results.Rda'))
 
 # Replication for Top Panel ####
