@@ -38,5 +38,5 @@ for (yr in 2019:2022) {
 # Save list objects with results 
 save(gini_predict, 
      is_q_predict,
-     file = paste0(root, '/var_results.Rda'))
+     file = paste0(root, '/var_predict_results.Rda'))
  
