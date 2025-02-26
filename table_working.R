@@ -188,6 +188,32 @@ tp_table <- gini_tp %>%
             q3_tp, 
             q4_tp, 
             q5_tp) 
+
+# Form "Nowcast Revisions" Table ####
+# Calculate "revision" for each nowcast as "actual-predicted"
+# Gini
+rev_gini <- round(mean(data$gini[21]-predictions[21]+data$gini[22]-predictions[22]+data$gini[23]-predictions[23]+data$gini[24]-predictions[24]), digit=1)
+rev_abs_gini <-round(mean(abs(data$gini[21]-predictions[21])+abs(data$gini[22]-predictions[22])+abs(data$gini[23]-predictions[23])+abs(data$gini[24]-predictions[24])), digit=1)
+# Quintiles
+rev_q1 <- round(mean(data$is_q1[21]-predictions2$is_q1[21]+data$is_q1[22]-predictions2$is_q1[22]+data$is_q1[23]-predictions2$is_q1[23]+data$is_q1[24]-predictions2$is_q1[24]),digit=1)
+rev_abs_q1 <-round(mean(abs(data$is_q1[21]-predictions2$is_q1[21])+abs(data$is_q1[22]-predictions2$is_q1[22])+abs(data$is_q1[23]-predictions2$is_q1[23])+abs(data$is_q1[24]-predictions2$is_q1[24])),digit=1)
+rev_q2 <- round(mean(data$is_q2[21]-predictions2$is_q2[21]+data$is_q2[22]-predictions2$is_q2[22]+data$is_q2[23]-predictions2$is_q2[23]+data$is_q2[24]-predictions2$is_q2[24]),digit=1)
+rev_abs_q2 <- round(mean(abs(data$is_q2[21]-predictions2$is_q2[21])+abs(data$is_q2[22]-predictions2$is_q2[22])+abs(data$is_q2[23]-predictions2$is_q2[23])+abs(data$is_q2[24]-predictions2$is_q2[24])),digit=1)
+rev_q3 <- round(mean(data$is_q3[21]-predictions2$is_q3[21]+data$is_q3[22]-predictions2$is_q3[22]+data$is_q3[23]-predictions2$is_q3[23]+data$is_q3[24]-predictions2$is_q3[24]),digit=1)
+rev_abs_q3 <- round(mean(abs(data$is_q3[21]-predictions2$is_q3[21])+abs(data$is_q3[22]-predictions2$is_q3[22])+abs(data$is_q3[23]-predictions2$is_q3[23])+abs(data$is_q3[24]-predictions2$is_q3[24])),digit=1)
+rev_q4 <- round(mean(data$is_q4[21]-predictions2$is_q4[21]+data$is_q4[22]-predictions2$is_q4[22]+data$is_q4[23]-predictions2$is_q4[23]+data$is_q4[24]-predictions2$is_q4[24]),digit=1)
+rev_abs_q4 <- round(mean(abs(data$is_q4[21]-predictions2$is_q4[21])+abs(data$is_q4[22]-predictions2$is_q4[22])+abs(data$is_q4[23]-predictions2$is_q4[23])+abs(data$is_q4[24]-predictions2$is_q4[24])),digit=1)
+rev_q5 <- round(mean(data$is_q5[21]-predictions2$is_q5[21]+data$is_q5[22]-predictions2$is_q5[22]+data$is_q5[23]-predictions2$is_q5[23]+data$is_q5[24]-predictions2$is_q5[24]),digit=1)
+rev_abs_q5 <- round(mean(abs(data$is_q5[21]-predictions2$is_q5[21])+abs(data$is_q5[22]-predictions2$is_q5[22])+abs(data$is_q5[23]-predictions2$is_q5[23])+abs(data$is_q5[24]-predictions2$is_q5[24])),digit=1)
+
+rev_table <- data.frame("Nowcast Revisions"=c("Mean Revision", "Mean Absolute Revision"), "Q1"=c(rev_q1, rev_abs_q1), "Q2"=c(rev_q2, rev_abs_q2), "Q3"=c(rev_q3, rev_abs_q3), "Q4"=c(rev_q4, rev_abs_q4), "Q5"=c(rev_q5, rev_abs_q5), "Gini"=c(rev_gini, rev_abs_gini))
+
+
+# Print Tables ####
+rmse_improvement
+tp_table
+rev_table
+
 # Print Tables ####
 rmse_improvement
 tp_table
