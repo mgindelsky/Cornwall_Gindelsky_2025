@@ -1,4 +1,6 @@
-pacman::p_load(vars, tidyverse, readxl, rstudioapi, forecast)
+rm(list=ls())
+pacman::p_unload(all)
+pacman::p_load(vars, tidyverse, readxl, rstudioapi, forecast, hablar)
 #Replication for Tables
 
 
@@ -6,8 +8,10 @@ pacman::p_load(vars, tidyverse, readxl, rstudioapi, forecast)
 root <- getSourceEditorContext()$path %>%    
   gsub(pattern = 'table.R', replacement = '')
 
+data <- read_excel(paste0(root,'/replication_data.xlsx'))
 load(file = paste0(root, '/var_predict_results.Rda'))
 load(file = paste0(root, '/enet_predict_results.Rda'))
+
 
 # Replication for Top Panel ####
 rmse_imp <- function(observed, var, enet) {
@@ -192,28 +196,82 @@ tp_table <- gini_tp %>%
 # Form "Nowcast Revisions" Table ####
 # Calculate "revision" for each nowcast as "actual-predicted"
 # Gini
-rev_gini <- round(mean(data$gini[21]-predictions[21]+data$gini[22]-predictions[22]+data$gini[23]-predictions[23]+data$gini[24]-predictions[24]), digit=1)
-rev_abs_gini <-round(mean(abs(data$gini[21]-predictions[21])+abs(data$gini[22]-predictions[22])+abs(data$gini[23]-predictions[23])+abs(data$gini[24]-predictions[24])), digit=1)
-# Quintiles
-rev_q1 <- round(mean(data$is_q1[21]-predictions2$is_q1[21]+data$is_q1[22]-predictions2$is_q1[22]+data$is_q1[23]-predictions2$is_q1[23]+data$is_q1[24]-predictions2$is_q1[24]),digit=1)
-rev_abs_q1 <-round(mean(abs(data$is_q1[21]-predictions2$is_q1[21])+abs(data$is_q1[22]-predictions2$is_q1[22])+abs(data$is_q1[23]-predictions2$is_q1[23])+abs(data$is_q1[24]-predictions2$is_q1[24])),digit=1)
-rev_q2 <- round(mean(data$is_q2[21]-predictions2$is_q2[21]+data$is_q2[22]-predictions2$is_q2[22]+data$is_q2[23]-predictions2$is_q2[23]+data$is_q2[24]-predictions2$is_q2[24]),digit=1)
-rev_abs_q2 <- round(mean(abs(data$is_q2[21]-predictions2$is_q2[21])+abs(data$is_q2[22]-predictions2$is_q2[22])+abs(data$is_q2[23]-predictions2$is_q2[23])+abs(data$is_q2[24]-predictions2$is_q2[24])),digit=1)
-rev_q3 <- round(mean(data$is_q3[21]-predictions2$is_q3[21]+data$is_q3[22]-predictions2$is_q3[22]+data$is_q3[23]-predictions2$is_q3[23]+data$is_q3[24]-predictions2$is_q3[24]),digit=1)
-rev_abs_q3 <- round(mean(abs(data$is_q3[21]-predictions2$is_q3[21])+abs(data$is_q3[22]-predictions2$is_q3[22])+abs(data$is_q3[23]-predictions2$is_q3[23])+abs(data$is_q3[24]-predictions2$is_q3[24])),digit=1)
-rev_q4 <- round(mean(data$is_q4[21]-predictions2$is_q4[21]+data$is_q4[22]-predictions2$is_q4[22]+data$is_q4[23]-predictions2$is_q4[23]+data$is_q4[24]-predictions2$is_q4[24]),digit=1)
-rev_abs_q4 <- round(mean(abs(data$is_q4[21]-predictions2$is_q4[21])+abs(data$is_q4[22]-predictions2$is_q4[22])+abs(data$is_q4[23]-predictions2$is_q4[23])+abs(data$is_q4[24]-predictions2$is_q4[24])),digit=1)
-rev_q5 <- round(mean(data$is_q5[21]-predictions2$is_q5[21]+data$is_q5[22]-predictions2$is_q5[22]+data$is_q5[23]-predictions2$is_q5[23]+data$is_q5[24]-predictions2$is_q5[24]),digit=1)
-rev_abs_q5 <- round(mean(abs(data$is_q5[21]-predictions2$is_q5[21])+abs(data$is_q5[22]-predictions2$is_q5[22])+abs(data$is_q5[23]-predictions2$is_q5[23])+abs(data$is_q5[24]-predictions2$is_q5[24])),digit=1)
+predictions <- gini_dat %>%
+  mutate(preds = true) %>%
+  mutate(preds = case_when(
+    year == 2020 ~ predictions_e19[which(year == 2020)],
+    year == 2021 ~ predictions_e20[which(year == 2021)],
+    year == 2022 ~ predictions_e21[which(year == 2022)],
+    year == 2023 ~ predictions_e22[which(year == 2023)],
+    TRUE ~ preds)) %>%
+  select(year, true, preds) %>%
+  mutate(revision = true - preds) %>%
+  filter(year > 2019) %>%
+  summarise(mean_revision = mean(revision), mean_absolute_revision = mean(abs(revision))) %>%
+  pivot_longer(cols = everything(),
+               names_to = 'metric',
+               values_to = 'value') 
 
-rev_table <- data.frame("Nowcast Revisions"=c("Mean Revision", "Mean Absolute Revision"), "Q1"=c(rev_q1, rev_abs_q1), "Q2"=c(rev_q2, rev_abs_q2), "Q3"=c(rev_q3, rev_abs_q3), "Q4"=c(rev_q4, rev_abs_q4), "Q5"=c(rev_q5, rev_abs_q5), "Gini"=c(rev_gini, rev_abs_gini))
+rev_table <- data %>%
+  select(year, is_q1, is_q2, is_q3, is_q4, is_q5) %>%
+  mutate(
+    pred_is_q1 = case_when(
+    year == 2020 ~ q1_dat$predictions_e19[which(q1_dat$year == 2020)],
+    year == 2021 ~ q1_dat$predictions_e20[which(q1_dat$year == 2021)],
+    year == 2022 ~ q1_dat$predictions_e21[which(q1_dat$year == 2022)],
+    year == 2023 ~ q1_dat$predictions_e22[which(q1_dat$year == 2023)],
+    TRUE ~ is_q1), 
+    pred_is_q2 = case_when(
+    year == 2020 ~ q2_dat$predictions_e19[which(q2_dat$year == 2020)],
+    year == 2021 ~ q2_dat$predictions_e20[which(q2_dat$year == 2021)],
+    year == 2022 ~ q2_dat$predictions_e21[which(q2_dat$year == 2022)],
+    year == 2023 ~ q2_dat$predictions_e22[which(q2_dat$year == 2023)],
+    TRUE ~ is_q2),
+    pred_is_q3 = case_when(
+    year == 2020 ~ q3_dat$predictions_e19[which(q3_dat$year == 2020)],
+    year == 2021 ~ q3_dat$predictions_e20[which(q3_dat$year == 2021)],
+    year == 2022 ~ q3_dat$predictions_e21[which(q3_dat$year == 2022)],
+    year == 2023 ~ q3_dat$predictions_e22[which(q3_dat$year == 2023)],
+    TRUE ~ is_q3),
+    pred_is_q4 = case_when(
+    year == 2020 ~ q4_dat$predictions_e19[which(q4_dat$year == 2020)],
+    year == 2021 ~ q4_dat$predictions_e20[which(q4_dat$year == 2021)],
+    year == 2022 ~ q4_dat$predictions_e21[which(q4_dat$year == 2022)],
+    year == 2023 ~ q4_dat$predictions_e22[which(q4_dat$year == 2023)],
+    TRUE ~ is_q4),
+    pred_is_q5 = case_when(
+    year == 2020 ~ q5_dat$predictions_e19[which(q5_dat$year == 2020)],
+    year == 2021 ~ q5_dat$predictions_e20[which(q5_dat$year == 2021)],
+    year == 2022 ~ q5_dat$predictions_e21[which(q5_dat$year == 2022)],
+    year == 2023 ~ q5_dat$predictions_e22[which(q5_dat$year == 2023)],
+    TRUE ~ is_q5)) %>%
+  mutate(revision_is_q1 = is_q1 - pred_is_q1,
+         revision_is_q2 = is_q2 - pred_is_q2,
+         revision_is_q3 = is_q3 - pred_is_q3,
+         revision_is_q4 = is_q4 - pred_is_q4,
+         revision_is_q5 = is_q5 - pred_is_q5) %>%
+  filter(year > 2019) %>%
+  summarise(q1_mean_revision = mean(revision_is_q1), q1_mean_abs_revision = mean(abs(revision_is_q1)),
+            q2_mean_revision = mean(revision_is_q2), q2_mean_abs_revision = mean(abs(revision_is_q2)),
+            q3_mean_revision = mean(revision_is_q3), q3_mean_abs_revision = mean(abs(revision_is_q3)),
+            q4_mean_revision = mean(revision_is_q4), q4_mean_abs_revision = mean(abs(revision_is_q4)),
+            q5_mean_revision = mean(revision_is_q5), q5_mean_abs_revision = mean(abs(revision_is_q5))) %>%
+  pivot_longer(cols = everything(),
+               names_to = 'variable',
+               values_to = 'value') %>%
+  mutate(quintile = substr(variable, 1, 2),
+         metric = case_when(
+           grepl('abs', variable) == T ~ 'Mean Absolute Revision',
+           grepl('abs', variable) == F ~ 'Mean Revision')) %>%
+  select(-variable) %>%
+  pivot_wider(names_from = quintile,
+              values_from = value) %>%
+  mutate(across(-metric,
+                ~round(.x, 1))) %>%
+  mutate(Gini = round(predictions$value,1))
 
 
 # Print Tables ####
 rmse_improvement
 tp_table
 rev_table
-
-# Print Tables ####
-rmse_improvement
-tp_table

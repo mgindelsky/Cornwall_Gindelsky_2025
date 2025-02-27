@@ -26,8 +26,7 @@
   root <- getSourceEditorContext()$path %>%    
 gsub(pattern = 'results.R', replacement = '')
 
-# Source Helper Function(s) ####
-  source(paste0(root, 'plot_results_function.R'))
+
          
 # Load Data ####
   data <- read_excel(paste0(root,'replication_data.xlsx'))
@@ -198,6 +197,8 @@ gsub(pattern = 'results.R', replacement = '')
       predictions = predictions2)
   }
   
+
+  
   # Preparing for Plotting ####
   q1_results <- lapply(resultsq, function(x) {
     data.frame(predictions = x$predictions[,1])})
@@ -348,5 +349,9 @@ q5_dat <- data.frame(year = data$year,
 save(gini_dat, q1_dat, q2_dat, q3_dat, q4_dat, q5_dat,
      file = paste0(root, 'enet_predict_results.Rda'))
   
-
+#Remove Intermediate Outputs and Leave Only Inputs, Final Outputs, and Directory Info ####
+rm(list=setdiff(ls(), c("root","data", 
+                        "gini_dat", "q1_dat",
+                        "q2_dat","q3_dat","q4_dat",
+                        "q5_dat")))
   
