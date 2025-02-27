@@ -193,7 +193,14 @@ tp_table <- gini_tp %>%
             q4_tp, 
             q5_tp) %>%
   mutate(Variable = c('Gini', 'Q1', 'Q2', 'Q3', 'Q4', 'Q5')) %>%
-  relocate(Variable)
+  relocate(Variable) %>%
+  pivot_longer(cols = -Variable,
+               names_to = 'Ending',
+               values_to = 'Value') %>%
+  mutate(Ending = 2000 +  parse_number(Ending)) %>%
+  pivot_wider(names_from = Variable,
+              values_from = Value) %>% 
+  relocate(Ending, Q1, Q2, Q3, Q4, Q5, Gini)
 
 # Form "Nowcast Revisions" Table ####
 # Calculate "revision" for each nowcast as "actual-predicted"
