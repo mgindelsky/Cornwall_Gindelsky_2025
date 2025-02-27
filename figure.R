@@ -1,4 +1,19 @@
 # First "results" program file needs to be run in order to generate the dataframes. Those datafames can then be used to generate Figure 1
+# Load Packages ####
+rm(list=ls())
+pacman::p_unload(all)
+pacman::p_load(readxl, tidyverse, ggplot2, glmnet, rstudioapi, pracma)
+
+# Directories ####
+root <- getSourceEditorContext()$path %>%    
+  gsub(pattern = 'figure.R', replacement = '')
+
+# Helper Function and data####
+data <- read_excel(paste0(root,'/replication_data.xlsx'))
+targets <- data %>%
+  dplyr::select(year, gini,	is_q1,	is_q2,	is_q3,	is_q4,	is_q5)
+load(paste0(root, 'plot_results.Rda'))
+source(paste0(root, '/plot_results_function.R'))
 
 #Gini
   plot_results(target_value = targets$gini, 
