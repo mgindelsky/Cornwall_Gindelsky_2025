@@ -268,7 +268,8 @@ rev_table <- data %>%
               values_from = value) %>%
   mutate(across(-metric,
                 ~round(.x, 1))) %>%
-  mutate(Gini = round(predictions$value,1))
+  mutate(Gini = round(predictions$value,1)) %>%
+  as.data.frame()
 
 
 # Print Tables ####
