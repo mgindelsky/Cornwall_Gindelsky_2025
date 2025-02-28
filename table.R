@@ -103,9 +103,35 @@ rmse_improvement <- data.frame(
   Gini = gini_rmse_imp) %>%
   mutate(across(everything(),
                 ~round(.x*100, 1))) %>%
-  mutate(Data_End = 2019:2022) %>%
-  relocate(Data_End)
+  mutate(Year = paste(2019:2022)) %>%
+  relocate(Year)
 
+# Covid only RMSE Improvemnt ####
+covid_only <- data.frame(
+  Year = 'Covid (2020:2022)',
+  Q1 = rmse_imp(observed = q1_dat$true[21:23] %>% as.numeric(.), 
+                var = vq1_dat %>% fill(everything()) %>% filter(year == 2023) %>% dplyr::select(-year, -predictions_e22, -true) %>% as.numeric(.),
+                enet = q1_dat %>% fill(everything()) %>% filter(year == 2023) %>% dplyr::select(-year, -predictions_e22, -true) %>% as.numeric(.)),
+  Q2 = rmse_imp(observed = q2_dat$true[21:23] %>% as.numeric(.),
+                var = vq2_dat %>% fill(everything()) %>% filter(year == 2023) %>% dplyr::select(-year, -predictions_e22, -true) %>% as.numeric(.),
+                enet = q2_dat %>% fill(everything()) %>% filter(year == 2023) %>% dplyr::select(-year, -predictions_e22, -true) %>% as.numeric(.)),
+  Q3 = rmse_imp(observed = q3_dat$true[21:23] %>% as.numeric(.),
+                var = vq3_dat %>% fill(everything()) %>% filter(year == 2023) %>% dplyr::select(-year, -predictions_e22, -true) %>% as.numeric(.),
+                enet = q3_dat %>% fill(everything()) %>% filter(year == 2023) %>% dplyr::select(-year, -predictions_e22, -true) %>% as.numeric(.)),
+  Q4 = rmse_imp(observed = q4_dat$true[21:23] %>% as.numeric(.),
+                var = vq4_dat %>% fill(everything()) %>% filter(year == 2023) %>% dplyr::select(-year, -predictions_e22, -true) %>% as.numeric(.),
+                enet = q4_dat %>% fill(everything()) %>% filter(year == 2023) %>% dplyr::select(-year, -predictions_e22, -true) %>% as.numeric(.)),
+  Q5 = rmse_imp(observed = q5_dat$true[21:23] %>% as.numeric(.),
+                var = vq5_dat %>% fill(everything()) %>% filter(year == 2023) %>% dplyr::select(-year, -predictions_e22, -true) %>% as.numeric(.),
+                enet = q5_dat %>% fill(everything()) %>% filter(year == 2023) %>% dplyr::select(-year, -predictions_e22, -true) %>% as.numeric(.)),
+  Gini = rmse_imp(observed = gini_dat$true[21:23] %>% as.numeric(.),
+                  var = vgini_dat %>% fill(everything()) %>% filter(year == 2023) %>% dplyr::select(-year, -predictions_e22, -true) %>% as.numeric(.),
+                  enet = gini_dat %>% fill(everything()) %>% filter(year == 2023) %>% dplyr::select(-year, -predictions_e22, -true) %>% as.numeric(.))) %>%
+  mutate(across(-Year,
+                ~round(.x*100, 1)))
+
+rmse_improvement <- rmse_improvement %>%
+  bind_rows(., covid_only) 
 # Turning Point Analysis ####
 gini_tp <- gini_dat %>%
   filter(year > 2000) %>%
