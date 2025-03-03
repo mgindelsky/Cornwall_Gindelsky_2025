@@ -9,7 +9,7 @@ Replication code for "Nowcasting Distributional National Accounts for the United
 - All analysis completed using NIPA Vintage October 2024
 - All analysis completed using distributional accounts vintage December 2024
 
-This replication package is based on inputs which have been rounded, consistent with BEA publication criteria. Accordingly, while the code will produce results consistent with the tables and figures in the published version, the results will not be exactly the same. However, researchers seeking to apply this method can use the code as a foundation from which to build.
+This replication package is based on inputs which have been rounded, consistent with BEA publication criteria. Accordingly, while the code will produce results consistent with the tables and figures in the published version, the results will not be exactly the same. In particular, for improvements in RMSE between the elastic net and VAR models it is important to note that rounding changes the structure of errors between observed and predicted. These changes are magnified through the square term meaning that the replication table, based on three digit reporting, may contain some elements that are quite different from the table in the paper which is based on a higher level of precision. For example, going from an RMSE of 0.04 to 0.03 is a 25% improvement while going from 0.04 to 0.02 (due to rounding) is a 50% improvement. However, researchers seeking to apply this method can use the code as a foundation from which to build.
 
 In order to replicate paper results, researchers should proceed as follows:
 1. Clone the repository to personal space
