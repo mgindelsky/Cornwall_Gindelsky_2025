@@ -2,6 +2,9 @@ rm(list=ls())
 pacman::p_unload(all)
 pacman::p_load(vars, tidyverse, readxl, rstudioapi, forecast, hablar)
 #Replication for Tables
+  # Note that the code below replicates the tables from the paper using 
+  # publicly available data. This data is reported at three digit precision. 
+  # As a result, these tables will not match the tables in the paper exactly.
 
 
 # Directories ####
@@ -211,6 +214,94 @@ q5_tp <- q5_dat %>%
   summarise_all(hablar::mean_) %>%
   mutate(across(everything(), ~round(.x*100)))
 
+# Covid only TP ####
+gini_tpc <- gini_dat %>%
+  filter(year %in% 2019:2022) %>%
+  mutate(across(-year, 
+                .fns = ~.x - lag(.x))) %>%
+  mutate(across( - c(year, true),
+                 .fns = ~.x * true)) %>%
+  dplyr::select(-true) %>%
+  mutate(across(-year,
+                .fns = ~ifelse(.x >= 0, 1, 0))) %>%
+  dplyr::select(-year) %>%
+  summarise_all(hablar::mean_) %>%
+  mutate(across(everything(), ~round(.x*100)))
+
+q1_tpc <- q1_dat %>%
+  filter(year %in% 2019:2022) %>%
+  mutate(across(-year, 
+                .fns = ~.x - lag(.x))) %>%
+  mutate(across( - c(year, true),
+                 .fns = ~.x * true)) %>%
+  dplyr::select(-true) %>%
+  mutate(across(-year,
+                .fns = ~ifelse(.x >= 0, 1, 0))) %>%
+  dplyr::select(-year) %>%
+  summarise_all(hablar::mean_) %>%
+  mutate(across(everything(), ~round(.x*100)))
+
+q2_tpc <- q2_dat %>%
+  filter(year %in% 2019:2022) %>%
+  mutate(across(-year, 
+                .fns = ~.x - lag(.x))) %>%
+  mutate(across( - c(year, true),
+                 .fns = ~.x * true)) %>%
+  dplyr::select(-true) %>%
+  mutate(across(-year,
+                .fns = ~ifelse(.x >= 0, 1, 0))) %>%
+  dplyr::select(-year) %>%
+  summarise_all(hablar::mean_) %>%
+  mutate(across(everything(), ~round(.x*100)))
+
+q3_tpc <- q3_dat %>%
+  filter(year %in% 2019:2022) %>%
+  mutate(across(-year, 
+                .fns = ~.x - lag(.x))) %>%
+  mutate(across( - c(year, true),
+                 .fns = ~.x * true)) %>%
+  dplyr::select(-true) %>%
+  mutate(across(-year,
+                .fns = ~ifelse(.x >= 0, 1, 0))) %>%
+  dplyr::select(-year) %>%
+  summarise_all(hablar::mean_) %>%
+  mutate(across(everything(), ~round(.x*100)))
+
+q4_tpc <- q4_dat %>%
+  filter(year %in% 2019:2022) %>%
+  mutate(across(-year, 
+                .fns = ~.x - lag(.x))) %>%
+  mutate(across( - c(year, true),
+                 .fns = ~.x * true)) %>%
+  dplyr::select(-true) %>%
+  mutate(across(-year,
+                .fns = ~ifelse(.x >= 0, 1, 0))) %>%
+  dplyr::select(-year) %>%
+  summarise_all(hablar::mean_) %>%
+  mutate(across(everything(), ~round(.x*100)))
+
+q5_tpc <- q5_dat %>%
+  filter(year %in% 2019:2022) %>%
+  mutate(across(-year, 
+                .fns = ~.x - lag(.x))) %>%
+  mutate(across( - c(year, true),
+                 .fns = ~.x * true)) %>%
+  dplyr::select(-true) %>%
+  mutate(across(-year,
+                .fns = ~ifelse(.x >= 0, 1, 0))) %>%
+  dplyr::select(-year) %>%
+  summarise_all(hablar::mean_) %>%
+  mutate(across(everything(), ~round(.x*100)))
+
+covid_only <- data.frame(
+  Ending = 'Covid (2020-2022)',
+  Q1 = rowMeans(q1_tpc),
+  Q2 = rowMeans(q2_tpc),
+  Q3 = rowMeans(q3_tpc),
+  Q4 = rowMeans(q4_tpc), 
+  Q5 = rowMeans(q5_tpc),
+  Gini = rowMeans(gini_tpc))
+
 # Form Turning Point Table ####
 tp_table <- gini_tp %>%
   bind_rows(q1_tp, 
@@ -226,11 +317,12 @@ tp_table <- gini_tp %>%
   mutate(Ending = 2000 +  parse_number(Ending)) %>%
   pivot_wider(names_from = Variable,
               values_from = Value) %>% 
-  relocate(Ending, Q1, Q2, Q3, Q4, Q5, Gini)
+  relocate(Ending, Q1, Q2, Q3, Q4, Q5, Gini) %>%
+  mutate(Ending = as.character(Ending)) %>%
+  bind_rows(., covid_only)
 
 # Form "Nowcast Revisions" Table ####
-# Calculate "revision" for each nowcast as "actual-predicted"
-# Gini
+# Calculate "revision" for each nowcast as "actual-predicted" ####
 predictions <- gini_dat %>%
   mutate(preds = true) %>%
   mutate(preds = case_when(

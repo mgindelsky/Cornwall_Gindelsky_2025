@@ -1,6 +1,6 @@
 rm(list=ls())
 pacman::p_unload(all)
-pacman::p_load(vars, tidyverse, readxl, rstudioapi, forecast)
+pacman::p_load(vars, tidyverse, readxl, rstudioapi, forecast, readxl)
 
 # Directories ####
 root <- getSourceEditorContext()$path %>%    
