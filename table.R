@@ -326,15 +326,15 @@ tp_table <- gini_tp %>%
 predictions <- gini_dat %>%
   mutate(preds = true) %>%
   mutate(preds = case_when(
-    year == 2020 ~ predictions_e19[which(year == 2020)],
-    year == 2021 ~ predictions_e20[which(year == 2021)],
-    year == 2022 ~ predictions_e21[which(year == 2022)],
-    year == 2023 ~ predictions_e22[which(year == 2023)],
+    year == 2021 ~ predictions_e19[which(year == 2021)],
+    year == 2022 ~ predictions_e20[which(year == 2022)],
+    year == 2023 ~ predictions_e21[which(year == 2023)],
+    year == 2024 ~ predictions_e22[which(year == 2024)],
     TRUE ~ preds)) %>%
   select(year, true, preds) %>%
   mutate(revision = true - preds) %>%
-  filter(year > 2019) %>%
-  summarise(mean_revision = mean(revision), mean_absolute_revision = mean(abs(revision))) %>%
+  filter(year > 2020) %>%
+  summarise(mean_revision = mean(revision, na.rm = T), mean_absolute_revision = mean(abs(revision), na.rm = T)) %>%
   pivot_longer(cols = everything(),
                names_to = 'metric',
                values_to = 'value') 
@@ -343,34 +343,34 @@ rev_table <- data %>%
   select(year, is_q1, is_q2, is_q3, is_q4, is_q5) %>%
   mutate(
     pred_is_q1 = case_when(
-    year == 2020 ~ q1_dat$predictions_e19[which(q1_dat$year == 2020)],
-    year == 2021 ~ q1_dat$predictions_e20[which(q1_dat$year == 2021)],
-    year == 2022 ~ q1_dat$predictions_e21[which(q1_dat$year == 2022)],
-    year == 2023 ~ q1_dat$predictions_e22[which(q1_dat$year == 2023)],
+    year == 2021 ~ q1_dat$predictions_e19[which(q1_dat$year == 2021)],
+    year == 2022 ~ q1_dat$predictions_e20[which(q1_dat$year == 2022)],
+    year == 2023 ~ q1_dat$predictions_e21[which(q1_dat$year == 2023)],
+    year == 2024 ~ q1_dat$predictions_e22[which(q1_dat$year == 2024)],
     TRUE ~ is_q1), 
     pred_is_q2 = case_when(
-    year == 2020 ~ q2_dat$predictions_e19[which(q2_dat$year == 2020)],
-    year == 2021 ~ q2_dat$predictions_e20[which(q2_dat$year == 2021)],
-    year == 2022 ~ q2_dat$predictions_e21[which(q2_dat$year == 2022)],
-    year == 2023 ~ q2_dat$predictions_e22[which(q2_dat$year == 2023)],
+    year == 2021 ~ q2_dat$predictions_e19[which(q2_dat$year == 2021)],
+    year == 2022 ~ q2_dat$predictions_e20[which(q2_dat$year == 2022)],
+    year == 2023 ~ q2_dat$predictions_e21[which(q2_dat$year == 2023)],
+    year == 2024 ~ q2_dat$predictions_e22[which(q2_dat$year == 2024)],
     TRUE ~ is_q2),
     pred_is_q3 = case_when(
-    year == 2020 ~ q3_dat$predictions_e19[which(q3_dat$year == 2020)],
-    year == 2021 ~ q3_dat$predictions_e20[which(q3_dat$year == 2021)],
-    year == 2022 ~ q3_dat$predictions_e21[which(q3_dat$year == 2022)],
-    year == 2023 ~ q3_dat$predictions_e22[which(q3_dat$year == 2023)],
+    year == 2021 ~ q3_dat$predictions_e19[which(q3_dat$year == 2021)],
+    year == 2022 ~ q3_dat$predictions_e20[which(q3_dat$year == 2022)],
+    year == 2023 ~ q3_dat$predictions_e21[which(q3_dat$year == 2023)],
+    year == 2024 ~ q3_dat$predictions_e22[which(q3_dat$year == 2024)],
     TRUE ~ is_q3),
     pred_is_q4 = case_when(
-    year == 2020 ~ q4_dat$predictions_e19[which(q4_dat$year == 2020)],
-    year == 2021 ~ q4_dat$predictions_e20[which(q4_dat$year == 2021)],
-    year == 2022 ~ q4_dat$predictions_e21[which(q4_dat$year == 2022)],
-    year == 2023 ~ q4_dat$predictions_e22[which(q4_dat$year == 2023)],
+    year == 2021 ~ q4_dat$predictions_e19[which(q4_dat$year == 2021)],
+    year == 2022 ~ q4_dat$predictions_e20[which(q4_dat$year == 2022)],
+    year == 2023 ~ q4_dat$predictions_e21[which(q4_dat$year == 2023)],
+    year == 2024 ~ q4_dat$predictions_e22[which(q4_dat$year == 2024)],
     TRUE ~ is_q4),
     pred_is_q5 = case_when(
-    year == 2020 ~ q5_dat$predictions_e19[which(q5_dat$year == 2020)],
     year == 2021 ~ q5_dat$predictions_e20[which(q5_dat$year == 2021)],
     year == 2022 ~ q5_dat$predictions_e21[which(q5_dat$year == 2022)],
     year == 2023 ~ q5_dat$predictions_e22[which(q5_dat$year == 2023)],
+    year == 2024 ~ q5_dat$predictions_e23[which(q5_dat$year == 2024)],
     TRUE ~ is_q5)) %>%
   mutate(revision_is_q1 = is_q1 - pred_is_q1,
          revision_is_q2 = is_q2 - pred_is_q2,
@@ -378,11 +378,11 @@ rev_table <- data %>%
          revision_is_q4 = is_q4 - pred_is_q4,
          revision_is_q5 = is_q5 - pred_is_q5) %>%
   filter(year > 2019) %>%
-  summarise(q1_mean_revision = mean(revision_is_q1), q1_mean_abs_revision = mean(abs(revision_is_q1)),
-            q2_mean_revision = mean(revision_is_q2), q2_mean_abs_revision = mean(abs(revision_is_q2)),
-            q3_mean_revision = mean(revision_is_q3), q3_mean_abs_revision = mean(abs(revision_is_q3)),
-            q4_mean_revision = mean(revision_is_q4), q4_mean_abs_revision = mean(abs(revision_is_q4)),
-            q5_mean_revision = mean(revision_is_q5), q5_mean_abs_revision = mean(abs(revision_is_q5))) %>%
+  summarise(q1_mean_revision = mean(revision_is_q1, na.rm = T), q1_mean_abs_revision = mean(abs(revision_is_q1), na.rm = T),
+            q2_mean_revision = mean(revision_is_q2, na.rm = T), q2_mean_abs_revision = mean(abs(revision_is_q2), na.rm = T),
+            q3_mean_revision = mean(revision_is_q3, na.rm = T), q3_mean_abs_revision = mean(abs(revision_is_q3), na.rm = T),
+            q4_mean_revision = mean(revision_is_q4, na.rm = T), q4_mean_abs_revision = mean(abs(revision_is_q4), na.rm = T),
+            q5_mean_revision = mean(revision_is_q5, na.rm = T), q5_mean_abs_revision = mean(abs(revision_is_q5), na.rm = T)) %>%
   pivot_longer(cols = everything(),
                names_to = 'variable',
                values_to = 'value') %>%
